@@ -12,6 +12,7 @@
   '((:connection-info . "CONNECTION-INFO")
     (:compile-string . "COMPILE-STRING-FOR-EMACS")
     (:compile-file . "COMPILE-FILE-FOR-EMACS")
+    (:load-file . "LOAD-FILE")
     (:backtrace . "BACKTRACE")
     (:frame-locals . "FRAME-LOCALS-AND-CATCH-TAGS")
     (:frame-source-location . "FRAME-SOURCE-LOCATION")
@@ -19,6 +20,11 @@
     (:invoke-restart . "INVOKE-NTH-RESTART-FOR-EMACS")
     (:return-from-frame . "SLY-DB-RETURN-FROM-FRAME")
     (:restart-frame . "RESTART-FRAME")
+    (:step-into . "SLY-DB-STEP")
+    (:step-next . "SLY-DB-NEXT")
+    (:step-out . "SLY-DB-OUT")
+    (:create-mrepl "SLYNK-MREPL" . "CREATE-MREPL")
+    (:inspect-entry "SLYNK-MREPL" . "INSPECT-ENTRY")
     (:init-inspector . "INIT-INSPECTOR")
     (:inspect-nth-part . "INSPECT-NTH-PART")
     (:inspector-call-nth-action . "INSPECTOR-CALL-NTH-ACTION")
@@ -50,10 +56,10 @@
   (open-wire-connection 'slynk-connection host port :backend backend))
 
 (defun slynk-loader-forms (port-file)
-  "--eval forms that load Slynk (Quicklisp when present, else ASDF) and start
-a server writing its port to PORT-FILE."
+  "--eval forms that load Slynk and its mrepl contrib (Quicklisp when present,
+else ASDF) and start a server writing its port to PORT-FILE."
   (list "(require :asdf)"
-        "(if (find-package :ql) (funcall (intern \"QUICKLOAD\" :ql) :slynk :silent t) (asdf:load-system :slynk))"
+        "(if (find-package :ql) (funcall (intern \"QUICKLOAD\" :ql) '(:slynk :slynk/mrepl) :silent t) (progn (asdf:load-system :slynk) (asdf:load-system :slynk/mrepl)))"
         (format nil "(funcall (intern \"START-SERVER\" :slynk) ~S :dont-close t)" port-file)))
 
 (defmethod repl-spawn ((backend slynk-backend) &key (command *default-image-command*) directory env (timeout 180))
