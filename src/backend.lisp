@@ -56,11 +56,16 @@
   (open-wire-connection 'slynk-connection host port :backend backend))
 
 (defun slynk-loader-forms (port-file)
-  "--eval forms that load Slynk and its mrepl contrib (Quicklisp when present,
-else ASDF) and start a server writing its port to PORT-FILE."
-  (list "(require :asdf)"
-        "(if (find-package :ql) (funcall (intern \"QUICKLOAD\" :ql) '(:slynk :slynk/mrepl) :silent t) (progn (asdf:load-system :slynk) (asdf:load-system :slynk/mrepl)))"
-        (format nil "(funcall (intern \"START-SERVER\" :slynk) ~S :dont-close t)" port-file)))
+  "--eval forms that load Slynk and its mrepl contrib with ASDF and start a
+server writing its port to PORT-FILE. Slynk resolves from the directory this
+image finds it in (the cl-repo install tree, ghcr.io/egao1980/cl-systems/slynk),
+else from the child's own registry; never from Quicklisp."
+  (remove nil
+          (list "(require :asdf)"
+                (system-registry-form '("slynk"))
+                "(asdf:load-system :slynk)"
+                "(asdf:load-system :slynk/mrepl)"
+                (format nil "(funcall (intern \"START-SERVER\" :slynk) ~S :dont-close t)" port-file))))
 
 (defmethod repl-spawn ((backend slynk-backend) &key (command *default-image-command*) directory env (timeout 180))
   (multiple-value-bind (port process) (spawn-image #'slynk-loader-forms :command command
