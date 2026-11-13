@@ -8,7 +8,7 @@ Sly [Slynk](https://github.com/joaotavora/sly) wire backend for [`repl-protocol`
 (stack-repl:repl-spawn (repl-backend-slynk:make-slynk-backend))                ; fresh image
 ```
 
-`repl-spawn` loads Slynk and its `slynk/mrepl` contrib in the child with `ql:quickload` (or `asdf:load-system` when Quicklisp is absent) and calls `slynk:start-server`.
+`repl-spawn` loads Slynk and its `slynk/mrepl` contrib in a `ros +Q run` child (no Quicklisp) with `asdf:load-system`, from the directory this image finds Slynk in (`repl-protocol:system-registry-form`; install it with cl-repo: `ghcr.io/egao1980/cl-systems/slynk`, here an `:ci :with` root), and calls `slynk:start-server`.
 
 Beyond the shared Swank-family surface, Slynk supports channels: `repl-open-channel` creates an mrepl (its own thread, package and `#v<entry>:<index>` history; its dedicated output socket is connected for you), `repl-channel-eval`, `repl-channel-inspect`, `repl-close-channel`. Stepping uses `sly-db-step` / `-next` / `-out`. Tests run the shared `repl-protocol/conformance` suite against a spawned SBCL.
 
