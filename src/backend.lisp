@@ -25,6 +25,8 @@
     (:step-out . "SLY-DB-OUT")
     (:create-mrepl "SLYNK-MREPL" . "CREATE-MREPL")
     (:inspect-entry "SLYNK-MREPL" . "INSPECT-ENTRY")
+    (:channel-mode "SLYNK-MREPL" . "MREPL-MODE")
+    (:find-channel . "FIND-CHANNEL")
     (:init-inspector . "INIT-INSPECTOR")
     (:inspect-nth-part . "INSPECT-NTH-PART")
     (:inspector-call-nth-action . "INSPECTOR-CALL-NTH-ACTION")
